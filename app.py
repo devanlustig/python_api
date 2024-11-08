@@ -1,6 +1,8 @@
-from flask import Flask, jsonify, request, make_response
+from flask import Flask, jsonify, request, make_response, Response
 from flask_httpauth import HTTPBasicAuth
-from model import Data
+from model import Karyawan
+from collections import OrderedDict
+import json
 
 app = Flask(__name__)
 app.config["DEBUG"] = True
@@ -20,7 +22,7 @@ def verify_password(username, password):
 @auth.login_required
 def karyawan():
     try:
-        dt = Data()
+        dt = Karyawan()
         data = []
 
         if request.method == 'GET':
@@ -32,7 +34,16 @@ def karyawan():
                 query = "SELECT * FROM data_karyawan"
                 values = None
             data = dt.get_data(query, values)
-           
+
+            formatted_data = []
+            for row in data:
+                formatted_data.append(OrderedDict([
+                    ("id", row["id"]),
+                    ("nama", row["nama"]),
+                    ("alamat", row["alamat"])
+                ]))
+            return Response(json.dumps({"data": formatted_data}, ensure_ascii=False),content_type="application/json")
+
         elif request.method == 'POST':
             datainput = request.json
             nama = datainput['nama']
@@ -47,7 +58,7 @@ def karyawan():
             datainput = request.json
             id_ = datainput.get('id')
             if id_ is None:
-                return make_response(jsonify({'error': 'Parameter id tidak diberikan'}), 400)
+                            return make_response(jsonify({'error': 'Parameter id tidak diberikan'}), 400)
 
             query = "UPDATE data_karyawan SET"
             values = []

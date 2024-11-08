@@ -1,6 +1,6 @@
 from database import conn, select, insert
 
-class Data:
+class Karyawan:
     def __init__(self):
         self.mydb = conn()
 
