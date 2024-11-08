@@ -28,10 +28,10 @@ def karyawan():
         if request.method == 'GET':
             id_ = request.args.get("id")
             if id_:
-                query = "SELECT * FROM data_karyawan WHERE id = %s"
+                query = "SELECT * FROM data_karyawan WHERE id = %s ORDER BY id DESC"
                 values = (id_,)
             else:
-                query = "SELECT * FROM data_karyawan"
+                query = "SELECT * FROM data_karyawan ORDER BY id DESC"
                 values = None
             data = dt.get_data(query, values)
 
@@ -82,17 +82,15 @@ def karyawan():
             if id_:
                 query = "DELETE FROM data_karyawan WHERE id = %s"
                 values = (id_,)
-                dt.insert_data(query, values)
+                dt.execute_query(query, values)
                 data = [{'pesan': 'data berhasil dihapus'}]
             else:
                 return make_response(jsonify({'error': 'Parameter id tidak diberikan'}), 400)
-        
         else:
             return make_response(jsonify({'error': 'Metode HTTP tidak didukung'}), 405)
 
     except Exception as e:
-        return make_response(jsonify({'error': str(e)}), 400)
-    
+        return make_response(jsonify({'error': str(e)}), 400)   
     return make_response(jsonify({'data': data}), 200)
 
 if __name__ == '__main__':
