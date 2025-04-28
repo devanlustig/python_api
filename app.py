@@ -2,9 +2,11 @@ from flask import Flask, jsonify, request, make_response, Response
 from flask_httpauth import HTTPBasicAuth
 from model import Karyawan
 from collections import OrderedDict
+from flask_cors import CORS
 import json
 
 app = Flask(__name__)
+CORS(app)
 app.config["DEBUG"] = True
 auth = HTTPBasicAuth()
 
