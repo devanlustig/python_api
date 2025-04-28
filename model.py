@@ -1,4 +1,5 @@
 from database import conn, select, insert
+import psycopg2.extras
 
 class Karyawan:
     def __init__(self):
@@ -13,15 +14,17 @@ class Karyawan:
         return insert(query, values, self.mydb)
 
     def execute_query(self, query, values=None):
+        cursor = None
         try:
-            cursor = self.mydb.cursor(dictionary=True)
+            cursor = self.mydb.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
             cursor.execute(query, values)
             if query.strip().upper().startswith('SELECT'):
-                return cursor.fetchall()  # Mengambil hasil query SELECT
+                return cursor.fetchall()
             else:
-                self.mydb.commit()  # Jika bukan SELECT, melakukan commit untuk operasi DML (INSERT, UPDATE, DELETE)
+                self.mydb.commit()
         except Exception as e:
-            self.mydb.rollback()  # Menggagalkan transaksi jika terjadi error
+            self.mydb.rollback()
             raise e
         finally:
-            cursor.close()
+            if cursor is not None:
+                cursor.close()
